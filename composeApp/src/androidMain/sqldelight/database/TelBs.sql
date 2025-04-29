@@ -1,0 +1,22 @@
+CREATE TABLE myMarcador (
+  id INTEGER PRIMARY KEY NOT NULL,
+  titulo TEXT NOT NULL,
+  descripcio TEXT NOT NULL,
+  lat INTEGER NOT NULL,
+  long INTEGER NOT NULL,
+  image TEXT NOT NULL,
+);
+CREATE INDEX myMarcador ON myTable(text);
+
+
+selectAll:
+SELECT * FROM myMarcador;
+SelectOne:
+SELECT * FROM myMarcador WHERE id = ?;
+DeleteOne:
+DELETE FROM myMarcador WHERE id = ?;
+UpdateOne:
+UPDATE myTable
+SET titulo = ?, descripcio = ?, lat = ?, long = ?, image = ? WHERE id = ?;
+InsertOne:
+INSERT INTO myTable (titulo, descripcio, lat, long, image) VALUES (?, ?, ?, ?, ?);
