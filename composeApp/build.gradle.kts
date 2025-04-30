@@ -157,9 +157,9 @@ secrets {
 }
 sqldelight {
     databases {
-        create("Database") {
+        create("basedatos") {
             packageName.set("cat.itb.m78.exercices.db")
-            schemaOutputDirectory.set(file("src/androidMain/sqldelight/database"))
+            schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
             verifyMigrations.set(true)
         }
     }
