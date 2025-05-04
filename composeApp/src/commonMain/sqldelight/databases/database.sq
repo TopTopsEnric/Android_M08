@@ -4,7 +4,8 @@ CREATE TABLE myMarcador (
   descripcio TEXT NOT NULL,
   lat INTEGER NOT NULL,
   long INTEGER NOT NULL,
-  image TEXT NOT NULL
+  image TEXT NOT NULL,
+  price INTEGER  NOT NULL
 );
 
 
@@ -19,6 +20,6 @@ DeleteOne:
 DELETE FROM myMarcador WHERE id = ?;
 UpdateOne:
 UPDATE myMarcador
-SET titulo = ?, descripcio = ?, lat = ?, long = ?, image = ? WHERE id = ?;
+SET titulo = ?, descripcio = ?, lat = ?, long = ?, image = ?, price= ? WHERE id = ?;
 InsertOne:
-INSERT INTO myMarcador (titulo, descripcio, lat, long, image) VALUES (?, ?, ?, ?, ?);
+INSERT INTO myMarcador (titulo, descripcio, lat, long, image, price) VALUES (?, ?, ?, ?, ?,?);

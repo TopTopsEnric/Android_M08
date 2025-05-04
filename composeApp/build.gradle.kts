@@ -83,6 +83,7 @@ kotlin {
             implementation("com.google.maps.android:maps-compose:6.6.0")
             implementation("app.cash.sqldelight:android-driver:2.0.2")
             implementation("androidx.startup:startup-runtime:1.2.0")
+            implementation ("io.coil-kt:coil-compose:2.5.0")
         }
 
         jvmMain.dependencies {
@@ -157,7 +158,7 @@ secrets {
 }
 sqldelight {
     databases {
-        create("basedatos") {
+        create("Database") {
             packageName.set("cat.itb.m78.exercices.db")
             schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
             verifyMigrations.set(true)
