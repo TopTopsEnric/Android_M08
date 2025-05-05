@@ -9,7 +9,7 @@ CREATE TABLE myMarcador (
 );
 
 
-CREATE INDEX myMarcador ON myMarcador(id);
+
 
 
 selectAll:

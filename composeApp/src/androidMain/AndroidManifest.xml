@@ -23,7 +23,7 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="cat.itb.m78.exercices.p2.db.ContextProvider"
+                android:name="cat.itb.m78.exercices.ContextProvider"
                 android:value="androidx.startup" />
         </provider>
         <provider
@@ -40,9 +40,8 @@
             android:value="${MAPS_API_KEY}" />
     </application>
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 </manifest>

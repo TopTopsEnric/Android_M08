@@ -1,3 +1,5 @@
+package cat.itb.m78.exercices
+
 import android.content.Context
 import androidx.startup.Initializer
 

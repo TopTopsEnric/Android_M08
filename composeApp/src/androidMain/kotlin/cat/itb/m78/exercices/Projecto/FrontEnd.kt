@@ -1,24 +1,106 @@
 package cat.itb.m78.exercices.Projecto
 
-import androidx.compose.runtime.Composable
+import android.Manifest
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import cat.itb.m78.exercices.Projecto.Screens.CreateScreen
-import cat.itb.m78.exercices.Projecto.Screens.EditScreen
 import cat.itb.m78.exercices.Projecto.Screens.MapScreen
+import cat.itb.m78.exercices.Projecto.Screens.EditScreen
 import cat.itb.m78.exercices.Projecto.Screens.RestaurantListScreen
 import cat.itb.m78.exercices.db.Database
+import com.google.accompanist.permissions.*
 
-class FrontEnd {
-    @Composable
-    fun RamenApp(database: Database) {
-        val navController = rememberNavController()
+/**
+ * Wrapper genérico que solicita una lista de permisos y,
+ * solo cuando todos están concedidos, invoca onAllGranted.
+ */
 
-        NavHost(navController = navController, startDestination = "map") {
-            composable("map") {
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun PermissionRequired(
+    permissions: List<String>,
+    onAllGranted: @Composable () -> Unit
+) {
+    val permState = rememberMultiplePermissionsState(permissions)
+
+    // ✅ Petición inicial en un side‐effect
+    LaunchedEffect(Unit) {
+        if (!permState.allPermissionsGranted) {
+            permState.launchMultiplePermissionRequest()
+        }
+    }
+
+    when {
+        // TODOS los permisos concedidos
+        permState.allPermissionsGranted -> {
+            onAllGranted()
+        }
+        // Mostrar rationale si ya denegó al menos una vez
+        permState.shouldShowRationale -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Necesitamos permisos para continuar.")
+                Spacer(Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        // ✅ Solo aquí, dentro del onClick
+                        permState.launchMultiplePermissionRequest()
+                    }
+                ) {
+                    Text("Conceder permisos")
+                }
+            }
+        }
+        // Primera vez o denegado sin rationale
+        else -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Para usar esta funcionalidad necesitamos permisos.")
+                Spacer(Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        // ✅ Y también aquí, dentro del onClick
+                        permState.launchMultiplePermissionRequest()
+                    }
+                ) {
+                    Text("Pedir permisos")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RamenApp(database: Database) {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = "map") {
+
+        // 1) MAP SCREEN: necesita permisos de localización (fine + coarse)
+        composable("map") {
+            PermissionRequired(
+                permissions = listOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            ) {
                 MapScreen(
                     database = database,
                     onAddRestaurant = { lat, long ->
@@ -29,16 +111,25 @@ class FrontEnd {
                     }
                 )
             }
-            composable(
-                "create/{lat}/{long}",
-                arguments = listOf(
-                    navArgument("lat") { type = NavType.FloatType },
-                    navArgument("long") { type = NavType.FloatType }
-                )
-            ) { backStackEntry ->
-                val lat = backStackEntry.arguments?.getFloat("lat") ?: 0f
-                val long = backStackEntry.arguments?.getFloat("long") ?: 0f
+        }
 
+        // 2) CREATE SCREEN: requiere permisos de cámara y escritura (para TakePicture)
+        composable(
+            "create/{lat}/{long}",
+            arguments = listOf(
+                navArgument("lat") { type = NavType.FloatType },
+                navArgument("long") { type = NavType.FloatType }
+            )
+        ) { backStackEntry ->
+            val lat = backStackEntry.arguments!!.getFloat("lat")
+            val long = backStackEntry.arguments!!.getFloat("long")
+
+            PermissionRequired(
+                permissions = listOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            ) {
                 CreateScreen(
                     database = database,
                     lat = lat,
@@ -46,21 +137,30 @@ class FrontEnd {
                     onSaveComplete = { navController.popBackStack() }
                 )
             }
-            composable("list") {
-                RestaurantListScreen(
-                    database = database,
-                    onEdit = { restaurantId ->
-                        navController.navigate("edit/$restaurantId")
-                    },
-                    onBackToMap = { navController.popBackStack() }
-                )
-            }
-            composable(
-                "edit/{restaurantId}",
-                arguments = listOf(navArgument("restaurantId") { type = NavType.LongType })
-            ) { backStackEntry ->
-                val restaurantId = backStackEntry.arguments?.getLong("restaurantId") ?: -1L
+        }
 
+        // 3) LIST SCREEN: no necesita permisos especiales
+        composable("list") {
+            RestaurantListScreen(
+                database = database,
+                onEdit = { id -> navController.navigate("edit/$id") },
+                onBackToMap = { navController.popBackStack() }
+            )
+        }
+
+        // 4) EDIT SCREEN: igual que Create, necesita cámara y escritura
+        composable(
+            "edit/{restaurantId}",
+            arguments = listOf(navArgument("restaurantId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val restaurantId = backStackEntry.arguments!!.getLong("restaurantId")
+
+            PermissionRequired(
+                permissions = listOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            ) {
                 EditScreen(
                     database = database,
                     restaurantId = restaurantId,

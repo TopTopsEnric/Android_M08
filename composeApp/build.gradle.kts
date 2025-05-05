@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.kotlinx.serialization)
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("app.cash.sqldelight") version "2.0.2"
+
 }
 
 composeCompiler {

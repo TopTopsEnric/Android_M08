@@ -2,7 +2,6 @@ package cat.itb.m78.exercices
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import applicationContext
 import cat.itb.m78.exercices.db.Database
 
 actual fun createDriver(): SqlDriver {
