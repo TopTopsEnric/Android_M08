@@ -18,8 +18,8 @@ import cat.itb.m78.exercices.db.Database
 import com.google.accompanist.permissions.*
 
 /**
- * Wrapper genérico que solicita una lista de permisos y,
- * solo cuando todos están concedidos, invoca onAllGranted.
+ * Wrapper genérico que solicita una lista de permisos y
+ * solo cuando todos están invoca onAllGranted.
  */
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -127,7 +127,7 @@ fun RamenApp(database: Database) {
             PermissionRequired(
                 permissions = listOf(
                     Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+
                 )
             ) {
                 CreateScreen(
@@ -158,7 +158,7 @@ fun RamenApp(database: Database) {
             PermissionRequired(
                 permissions = listOf(
                     Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+
                 )
             ) {
                 EditScreen(

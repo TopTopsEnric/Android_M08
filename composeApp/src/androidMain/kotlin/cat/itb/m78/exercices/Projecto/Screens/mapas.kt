@@ -3,10 +3,12 @@ package cat.itb.m78.exercices.Projecto.Screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -50,7 +52,10 @@ fun MapScreen(
         floatingActionButton = {
             Column(
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier
+                    .offset(y = (-100).dp)
+
             ) {
                 FloatingActionButton(
                     onClick = {
@@ -68,6 +73,12 @@ fun MapScreen(
                     Icon(
                         imageVector = Icons.Default.List,
                         contentDescription = "Ver lista"
+                    )
+                }
+                FloatingActionButton(onClick = { viewModel.loadRestaurants() }) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Actualizar"
                     )
                 }
             }

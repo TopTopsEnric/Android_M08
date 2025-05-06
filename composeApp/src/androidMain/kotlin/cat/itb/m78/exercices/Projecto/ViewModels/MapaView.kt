@@ -18,7 +18,7 @@ class MapViewModel(private val database: Database) : ViewModel() {
         loadRestaurants()
     }
 
-    private fun loadRestaurants() {
+    public fun loadRestaurants() {
         viewModelScope.launch(Dispatchers.IO) {
             _restaurants.value = database.databaseQueries.selectAll().executeAsList()
         }
