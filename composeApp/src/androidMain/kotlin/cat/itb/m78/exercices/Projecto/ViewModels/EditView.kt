@@ -25,8 +25,8 @@ class EditViewModel(private val database: Database) : ViewModel() {
     fun loadRestaurant(id: Long) {
         restaurantId = id
         viewModelScope.launch(Dispatchers.IO) {
-            val restaurant = database.databaseQueries.SelectOne(id).executeAsOneOrNull()
-
+            val restaurant = database.databaseQueries.SelectOne(id).executeAsOneOrNull() // pillamos el objeto
+            // setamos lo datos
             restaurant?.let {
                 withContext(Dispatchers.Main) {
                     titulo = it.titulo
@@ -44,7 +44,7 @@ class EditViewModel(private val database: Database) : ViewModel() {
         if (titulo.isBlank() || descripcion.isBlank() || imageUri == null || price.isBlank()) {
             return // Validación fallida
         }
-
+        // hacemos el update one con los datos actuales de nuesto viewmodel
         viewModelScope.launch(Dispatchers.IO) {
             database.databaseQueries.UpdateOne(
                 titulo = titulo,
@@ -55,7 +55,7 @@ class EditViewModel(private val database: Database) : ViewModel() {
                 price = price.toIntOrNull()?.toLong() ?: 0L,
                 id = restaurantId
             )
-
+            // para que vuelva a la pantalla anterior
             withContext(Dispatchers.Main) {
                 onComplete()
             }
@@ -64,9 +64,9 @@ class EditViewModel(private val database: Database) : ViewModel() {
 
     fun deleteRestaurant(onComplete: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            database.databaseQueries.DeleteOne(restaurantId)
+            database.databaseQueries.DeleteOne(restaurantId)//eliminamos de la base de datos
             withContext(Dispatchers.Main) {
-                onComplete()
+                onComplete() // volvemos para atras
             }
         }
     }

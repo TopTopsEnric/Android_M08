@@ -38,29 +38,31 @@ fun MapScreen(
     onNavigateToList: () -> Unit
 ) {
     val viewModel = viewModel { MapViewModel(database) }
-    val restaurants by viewModel.restaurants.collectAsState()
+    val restaurants by viewModel.restaurants.collectAsState() // agarramos la lista y la preparamos para compose
 
     // Definir estado de cámara
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
             LatLng(40.416775, -3.70379), // Centro de España por defecto
-            6f
+            6f // indiacamos zoom de camara al iniciarse
         )
     }
 
-    Scaffold(
-        floatingActionButton = {
+    Scaffold( // lo usamos para poder usar los botones en el mapa los Fabs
+        floatingActionButton = { // este es un fab
             Column(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 modifier = Modifier
-                    .offset(y = (-100).dp)
+                    .offset(y = (-100).dp) // evitar que tape los botones de zoom del default de googlemaps
 
             ) {
                 FloatingActionButton(
                     onClick = {
-                        val target = cameraPositionState.position.target
-                        onAddRestaurant(target.latitude.toFloat(), target.longitude.toFloat())
+                        val target = cameraPositionState.position.target // pillamos la lozalizacion del centro de la camara
+                        // pilla las posiciones pero espoco preciso, si tuviera mas tiempo lo cambiaria por algo de pulsar
+
+                        onAddRestaurant(target.latitude.toFloat(), target.longitude.toFloat()) // nos vamos a la screen create
                     }
                 ) {
                     Icon(
@@ -69,13 +71,13 @@ fun MapScreen(
                     )
                 }
 
-                FloatingActionButton(onClick = onNavigateToList) {
+                FloatingActionButton(onClick = onNavigateToList) { // nos vamos a lista
                     Icon(
                         imageVector = Icons.Default.List,
                         contentDescription = "Ver lista"
                     )
                 }
-                FloatingActionButton(onClick = { viewModel.loadRestaurants() }) {
+                FloatingActionButton(onClick = { viewModel.loadRestaurants() }) { // actualizamos para que se vean las nuevas marcas
                     Icon(
                         imageVector = Icons.Default.Refresh,
                         contentDescription = "Actualizar"
@@ -84,24 +86,24 @@ fun MapScreen(
             }
         }
     ) { padding ->
-        GoogleMap(
+        GoogleMap( // creamos el google maps
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            cameraPositionState = cameraPositionState,
+            cameraPositionState = cameraPositionState, // la posicion inicial
             properties = MapProperties(
-                isMyLocationEnabled = true,
-                mapType = MapType.NORMAL
+                isMyLocationEnabled = true, // poder ver la localizacion
+                mapType = MapType.NORMAL // tipo de mapa, default de maps
             )
         ) {
-            // Añadir marcadores para cada restaurante
+            // Añadir marcadores para cada restaurante, con la variable que antes hemos seteado pues creamos los marcadores
             restaurants.forEach { restaurant ->
                 Marker(
                     state = MarkerState(
-                        position = LatLng(restaurant.lat.toDouble(), restaurant.long.toDouble())
+                        position = LatLng(restaurant.lat.toDouble(), restaurant.long.toDouble()) // como lo guarde con long pues se pone ne double
                     ),
-                    title = restaurant.titulo,
-                    snippet = "Precio medio: ${restaurant.price}€"
+                    title = restaurant.titulo, // titulo
+                    snippet = "Precio medio: ${restaurant.price}€" // texto secundario para dar informacion util, como son restaurantes el precio
                 )
             }
         }

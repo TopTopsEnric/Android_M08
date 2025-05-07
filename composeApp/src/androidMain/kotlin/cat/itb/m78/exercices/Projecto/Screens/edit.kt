@@ -69,11 +69,16 @@ fun EditScreen(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
-        // La URI ya está en viewModel.imageUri si success es true
+        if (success) {
+            // Forzar una actualización de estado para que Compose recomponga
+            val currentUri = viewModel.imageUri
+            viewModel.imageUri = null  // Resetea temporalmente
+            viewModel.imageUri = currentUri  // Reasigna para forzar recomposición
+        }
     }
-
+    // variable para mostrar la interfaz de eliminacion
     val showDeleteDialog = remember { mutableStateOf(false) }
-
+    // sistema de eliminacion y la variable est true se muestra
     if (showDeleteDialog.value) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog.value = false },

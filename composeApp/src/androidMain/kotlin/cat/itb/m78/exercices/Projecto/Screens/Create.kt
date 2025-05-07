@@ -37,16 +37,18 @@ import cat.itb.m78.exercices.db.Database
 import cat.itb.m78.exercices.Projecto.ComposeFileProvider
 import coil.compose.AsyncImage
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class) // necesario para usar el topbar
 @Composable
 fun CreateScreen(
-    database: Database,
+    database: Database,// la base de datos
     lat: Float,
     long: Float,
     onSaveComplete: () -> Unit
 ) {
-    val viewModel = viewModel { CreateViewModel(database) }
-    val context = LocalContext.current
+    val viewModel = viewModel { CreateViewModel(database) } // instanciamos el viewModel
+    // no es exactamente como lo haciamos antes pero sigues sin usar logica en la pnatala asi que creo que no hay problema con ello
+
+    val context = LocalContext.current // importamos el context
 
     // Lanzador para seleccionar imagen de galería
     val galleryLauncher = rememberLauncherForActivityResult(
@@ -59,15 +61,20 @@ fun CreateScreen(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
-        // La URI ya está en viewModel.imageUri si success es true
+        if (success) {
+            // Forzar una actualización de estado para que Compose recomponga
+            val currentUri = viewModel.imageUri
+            viewModel.imageUri = null  // Resetea temporalmente
+            viewModel.imageUri = currentUri  // Reasigna para forzar recomposición
+        }
     }
 
-    Scaffold(
+    Scaffold( // scfold necesario para isar topbar
         topBar = {
             TopAppBar(
                 title = { Text("Nuevo Restaurante") },
                 navigationIcon = {
-                    IconButton(onClick = onSaveComplete) {
+                    IconButton(onClick = onSaveComplete) { // para tirar atras y no crear nada
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Volver atrás"
@@ -76,12 +83,12 @@ fun CreateScreen(
                 }
             )
         }
-    ) { padding ->
-        Column(
+    ) { padding -> // evitamos que se pongan encima unos de otros
+        Column( // contenedor principal
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
+                .padding(16.dp), // doble padding para pillar buen margen, interesante uso
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Coordenadas (no editables)
@@ -92,10 +99,10 @@ fun CreateScreen(
 
             // Título
             OutlinedTextField(
-                value = viewModel.titulo,
-                onValueChange = { viewModel.titulo = it },
+                value = viewModel.titulo, // valor actual, en este caso ninguno
+                onValueChange = { viewModel.titulo = it }, // para que cuando cambie se envie al viewmodel
                 label = { Text("Nombre del restaurante") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth() // que ocupe lo maximo
             )
 
             // Descripción
@@ -104,7 +111,7 @@ fun CreateScreen(
                 onValueChange = { viewModel.descripcion = it },
                 label = { Text("Descripción") },
                 modifier = Modifier.fillMaxWidth(),
-                minLines = 3
+                minLines = 3 // para que el campo guarde texto mas largo
             )
 
             // Precio
@@ -116,13 +123,13 @@ fun CreateScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Imagen
+            // contenedor de los botones de opciones
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
-                    onClick = { galleryLauncher.launch("image/*") },
+                    onClick = { galleryLauncher.launch("image/*") }, // lanzador de galeria pero solo para imagenes, asi evitamos videos
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Galería")
@@ -132,8 +139,9 @@ fun CreateScreen(
                     onClick = {
                         // Crear un archivo temporal para la foto
                         val uri = ComposeFileProvider.getImageUri(context)
-                        viewModel.imageUri = uri
-                        cameraLauncher.launch(uri)
+                        cameraLauncher.launch(uri) // cuando tome la foto lo meta en el archivo temporal
+                        viewModel.imageUri = uri // asignamos la imagen al campo en el viewmodel
+
                     },
                     modifier = Modifier.weight(1f)
                 ) {
@@ -142,23 +150,25 @@ fun CreateScreen(
             }
 
             // Vista previa de la imagen
-            viewModel.imageUri?.let { uri ->
+            viewModel.imageUri?.let { uri -> // si hay uri imprime imagen
                 AsyncImage(
-                    model = uri,
+                    model = uri, // pillamos la imagen del viewmodel
                     contentDescription = "Vista previa",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
+                        .height(150.dp)
+                        .clip(RoundedCornerShape(8.dp)), // lados redondos
+                    contentScale = ContentScale.Crop // ajusta la imagen rellenando el espacio y recortando si es necesario
                 )
-            }
+            }// Vista previa de la imagen
 
-            Spacer(modifier = Modifier.weight(1f))
+
+
+           // Spacer(modifier = Modifier.weight(1f)) // espacio para el boton
 
             // Botón guardar
             Button(
-                onClick = { viewModel.saveRestaurant(lat, long, onSaveComplete) },
+                onClick = { viewModel.saveRestaurant(lat, long, onSaveComplete) }, // llamamos a la funcion del viewmodel para guardar en la base de datos
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("GUARDAR")

@@ -78,7 +78,7 @@ fun RestaurantListScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(restaurants) { restaurant ->
+            items(restaurants) { restaurant -> // se encarga de crear un elemento de lista por cada restaurante
                 RestaurantItem(
                     restaurant = restaurant,
                     onEditClick = { onEdit(restaurant.id) }
@@ -93,10 +93,10 @@ fun RestaurantItem(
     restaurant: MyMarcador,
     onEditClick: () -> Unit
 ) {
-    Card(
+    Card( // contenedor para darle efecto
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onEditClick),
+            .clickable(onClick = onEditClick), // hace que se pueda pulsar
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -105,12 +105,12 @@ fun RestaurantItem(
         ) {
             // Imagen del restaurante
             AsyncImage(
-                model = Uri.parse(restaurant.image),
+                model = Uri.parse(restaurant.image), // tranforma el string en Uri y la pasa como imagen
                 contentDescription = restaurant.titulo,
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(80.dp) // tamaño
                     .clip(CircleShape),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop // recorta si es necesario
             )
 
             Spacer(modifier = Modifier.width(16.dp))

@@ -1,4 +1,4 @@
-package cat.itb.m78.exercices.theme
+package cat.itb.m78.exercices
 
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlCursor

@@ -22,7 +22,7 @@ class CreateViewModel(private val database: Database) : ViewModel() {
         if (titulo.isBlank() || descripcion.isBlank() || imageUri == null || price.isBlank()) {
             return // Validación fallida
         }
-
+        // hacemos en insert
         viewModelScope.launch(Dispatchers.IO) {
             database.databaseQueries.InsertOne(
                 titulo = titulo,
@@ -32,7 +32,7 @@ class CreateViewModel(private val database: Database) : ViewModel() {
                 image = imageUri.toString(),
                 price = price.toIntOrNull()?.toLong() ?: 0L
             )
-
+            // el dispatcher.main se hace para manejar hilos de ui por ende los callbacks del navController
             withContext(Dispatchers.Main) {
                 onComplete()
             }
