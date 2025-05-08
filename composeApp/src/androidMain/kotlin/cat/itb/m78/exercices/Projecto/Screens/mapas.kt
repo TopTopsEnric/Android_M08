@@ -1,5 +1,6 @@
 package cat.itb.m78.exercices.Projecto.Screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import cat.itb.m78.exercices.Projecto.ViewModels.MapViewModel
 import cat.itb.m78.exercices.db.Database
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -96,6 +98,14 @@ fun MapScreen(
                 mapType = MapType.NORMAL // tipo de mapa, default de maps
             )
         ) {
+            Marker(
+                state = remember { MarkerState(
+                    position = LatLng(41.45328178497256, 2.186292533727111) // como lo guarde con long pues se pone ne double
+                ) },
+                title = "ITB", // titulo
+                snippet = "Precio medio: 500" // texto secundario para dar informacion util, como son restaurantes el precio
+            )
+
             // Añadir marcadores para cada restaurante, con la variable que antes hemos seteado pues creamos los marcadores
             restaurants.forEach { restaurant ->
                 Marker(

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cat.itb.m78.exercices.Projecto.FotoSettingsManager
 import cat.itb.m78.exercices.db.Database
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,6 +18,7 @@ class CreateViewModel(private val database: Database) : ViewModel() {
     var descripcion by mutableStateOf("")
     var imageUri by mutableStateOf<Uri?>(null)
     var price by mutableStateOf("")
+    var fotoreciente by mutableStateOf(FotoSettingsManager.get().imatgereciente)
 
     fun saveRestaurant(lat: Float, long: Float, onComplete: () -> Unit) {
         if (titulo.isBlank() || descripcion.isBlank() || imageUri == null || price.isBlank()) {

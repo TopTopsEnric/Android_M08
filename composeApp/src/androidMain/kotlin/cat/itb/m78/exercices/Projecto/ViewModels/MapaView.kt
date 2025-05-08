@@ -15,6 +15,7 @@ class MapViewModel(private val database: Database) : ViewModel() {
     val restaurants: StateFlow<List<MyMarcador>> = _restaurants // lista public pero no editable
 
     init {
+
         loadRestaurants() // cargamos cuando se iniciliza
     }
 
@@ -23,6 +24,8 @@ class MapViewModel(private val database: Database) : ViewModel() {
             _restaurants.value = database.databaseQueries.selectAll().executeAsList()// cargamos la lista
         }
     }
+
+
 
     // Recargar datos cuando sea necesario (por ejemplo, después de añadir o editar)
     fun refreshData() {

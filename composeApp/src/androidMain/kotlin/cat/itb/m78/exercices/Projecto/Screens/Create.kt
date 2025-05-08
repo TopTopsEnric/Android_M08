@@ -35,6 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cat.itb.m78.exercices.Projecto.ViewModels.CreateViewModel
 import cat.itb.m78.exercices.db.Database
 import cat.itb.m78.exercices.Projecto.ComposeFileProvider
+import cat.itb.m78.exercices.Projecto.SettingsViewModel
 import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class) // necesario para usar el topbar
@@ -45,6 +46,7 @@ fun CreateScreen(
     long: Float,
     onSaveComplete: () -> Unit
 ) {
+    val viewModelSettings = viewModel { SettingsViewModel() }
     val viewModel = viewModel { CreateViewModel(database) } // instanciamos el viewModel
     // no es exactamente como lo haciamos antes pero sigues sin usar logica en la pnatala asi que creo que no hay problema con ello
 
@@ -66,6 +68,7 @@ fun CreateScreen(
             val currentUri = viewModel.imageUri
             viewModel.imageUri = null  // Resetea temporalmente
             viewModel.imageUri = currentUri  // Reasigna para forzar recomposición
+
         }
     }
 
@@ -141,11 +144,24 @@ fun CreateScreen(
                         val uri = ComposeFileProvider.getImageUri(context)
                         cameraLauncher.launch(uri) // cuando tome la foto lo meta en el archivo temporal
                         viewModel.imageUri = uri // asignamos la imagen al campo en el viewmodel
+                        viewModelSettings.updatefoto(uri.toString())
+                        viewModelSettings.saveSettings()
 
                     },
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Cámara")
+                }
+
+                Button(
+                    onClick = {
+
+                        viewModel.imageUri =Uri.parse(viewModelSettings.foto)// asignamos la imagen al campo en el viewmodel
+
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Last Image")
                 }
             }
 
